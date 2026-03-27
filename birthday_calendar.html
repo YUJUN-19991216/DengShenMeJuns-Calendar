@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>等什么君纪念日历 · 1999.12.16</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap');
+        
+        :root {
+            --primary: #ff69b4;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', system-ui, sans-serif;
+            background: linear-gradient(135deg, #fff0f5, #f8e8ff);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .calendar-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(255, 105, 180, 0.15);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+        }
+        
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        header p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+        
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 15px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .controls button {
+            background: #fff;
+            border: 2px solid #ff69b4;
+            color: #ff69b4;
+            font-size: 18px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .controls button:hover {
+            background: #ff69b4;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .controls .today-btn {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 0 24px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        
+        .month-year {
+            font-size: 22px;
+            font-weight: 700;
+            min-width: 220px;
+            text-align: center;
+            color: #333;
+        }
+        
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background: #fff;
+            font-weight: 700;
+            color: #ff69b4;
+            text-align: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .weekdays div {
+            font-size: 15px;
+        }
+        
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #eee;
+            padding: 1px;
+        }
+        
+        .day {
+            background: white;
+            min-height: 110px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transition: all 0.2s;
+            cursor: default;
+        }
+        
+        .day.other-month {
+            opacity: 0.45;
+            background: #fdf8ff;
+        }
+        
+        .day:hover {
+            background: #fff9fb;
+            transform: translateY(-3px);
+        }
+        
+        .day-number {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #333;
+        }
+        
+        .birthday .day-number {
+            color: #ff1493;
+            font-size: 26px;
+            position: relative;
+        }
+        
+        .birthday .day-number::after {
+            content: "🎂";
+            font-size: 18px;
+            position: absolute;
+            right: -22px;
+            top: -4px;
+        }
+        
+        .diff {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            background: #f8f8f8;
+            padding: 2px 10px;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+        
+        .birthday .diff {
+            background: #fff0f5;
+            color: #ff1493;
+            font-weight: 700;
+        }
+        
+        .footer {
+            padding: 15px;
+            text-align: center;
+            font-size: 14px;
+            color: #888;
+            background: white;
+        }
+        
+        @media (max-width: 600px) {
+            .day {
+                min-height: 90px;
+            }
+            .day-number {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calendar-container">
+        <!-- 头部 -->
+        <header>
+            <h1>等什么君纪念日历</h1>
+            <p>1999年12月16日 · 距离君君出生日</p>
+        </header>
+
+        <!-- 控制栏 -->
+        <div class="controls">
+            <button id="prev-year">«</button>
+            <button id="prev-month">‹</button>
+            
+            <div class="month-year" id="month-year-display">2026 年 3 月</div>
+            
+            <button id="next-month">›</button>
+            <button id="next-year">»</button>
+            <button class="today-btn" id="today-btn">今天</button>
+        </div>
+
+        <!-- 星期标题 -->
+        <div class="weekdays">
+            <div>日</div>
+            <div>一</div>
+            <div>二</div>
+            <div>三</div>
+            <div>四</div>
+            <div>五</div>
+            <div>六</div>
+        </div>
+
+        <!-- 日历网格 -->
+        <div class="days-grid" id="days-grid"></div>
+
+        <!-- 页脚 -->
+        <div class="footer">
+            点击左右箭头翻页 · 12月16日高亮为君君生日 · 数字为距1999.12.16的天数（之前为负数）<br> 执籽之手，与君偕老
+        </div>
+    </div>
+
+    <script>
+        // 偶像出生日期（固定）
+        const BIRTH_DATE = new Date(1999, 11, 16); // 1999年12月16日（月份从0开始）
+
+        // 当前显示的年月
+        let currentYear = new Date().getFullYear();
+        let currentMonth = new Date().getMonth();
+
+        // 中文月份
+        const MONTH_NAMES = [
+            "1月", "2月", "3月", "4月", "5月", "6月",
+            "7月", "8月", "9月", "10月", "11月", "12月"
+        ];
+
+        // 计算与出生日的天数差（精确到天）
+        function getDaysDiff(targetDate) {
+            const diffTime = targetDate.getTime() - BIRTH_DATE.getTime();
+            return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        // 判断是否为偶像生日（每年12月16日）
+        function isBirthday(date) {
+            return date.getFullYear() >= 1999 && date.getMonth() === 11 && date.getDate() === 16;
+        }
+
+        // 渲染日历
+        function renderCalendar() {
+            const grid = document.getElementById('days-grid');
+            grid.innerHTML = '';
+
+            // 当前月第一天是星期几（0=周日）
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            
+            // 当前月天数
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            // 上个月天数
+            const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+            const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+            const daysInPrevMonth = new Date(prevYear, prevMonth + 1, 0).getDate();
+
+            // 下个月
+            const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+            const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+
+            // 更新标题
+            document.getElementById('month-year-display').textContent = 
+                `${currentYear} 年 ${MONTH_NAMES[currentMonth]}`;
+
+            // 1. 上个月补位
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const dayNum = daysInPrevMonth - i;
+                const date = new Date(prevYear, prevMonth, dayNum);
+                const diff = getDaysDiff(date);
+                const isBD = isBirthday(date);
+                
+                const dayEl = createDayElement(dayNum, diff, isBD, true);
+                grid.appendChild(dayEl);
+            }
+
+            // 2. 当前月
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(currentYear, currentMonth, day);
+                const diff = getDaysDiff(date);
+                const isBD = isBirthday(date);
+                
+                const dayEl = createDayElement(day, diff, isBD, false);
+                grid.appendChild(dayEl);
+            }
+
+            // 3. 下个月补位（补满6周 = 42格）
+            let remainingCells = 42 - (firstDay + daysInMonth);
+            let nextDay = 1;
+            for (let i = 0; i < remainingCells; i++) {
+                const date = new Date(nextYear, nextMonth, nextDay);
+                const diff = getDaysDiff(date);
+                const isBD = isBirthday(date);
+                
+                const dayEl = createDayElement(nextDay, diff, isBD, true);
+                grid.appendChild(dayEl);
+                nextDay++;
+            }
+        }
+
+        // 创建单个日期格子
+        function createDayElement(dayNum, diff, isBirthdayFlag, isOtherMonth) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = `day ${isOtherMonth ? 'other-month' : ''} ${isBirthdayFlag ? 'birthday' : ''}`;
+            
+            // 日期数字
+            const numSpan = document.createElement('div');
+            numSpan.className = 'day-number';
+            numSpan.textContent = dayNum;
+            dayDiv.appendChild(numSpan);
+            
+            // 天数差
+            const diffSpan = document.createElement('div');
+            diffSpan.className = 'diff';
+            diffSpan.textContent = `${diff}`;
+            dayDiv.appendChild(diffSpan);
+            
+            return dayDiv;
+        }
+
+        // 切换上一个月
+        function goPrevMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        }
+
+        // 切换下一个月
+        function goNextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            renderCalendar();
+        }
+
+        // 切换上一年
+        function goPrevYear() {
+            currentYear--;
+            renderCalendar();
+        }
+
+        // 切换下一年
+        function goNextYear() {
+            currentYear++;
+            renderCalendar();
+        }
+
+        // 回到今天
+        function goToToday() {
+            const now = new Date();
+            currentYear = now.getFullYear();
+            currentMonth = now.getMonth();
+            renderCalendar();
+        }
+
+        // 绑定按钮事件
+        function bindEvents() {
+            document.getElementById('prev-month').addEventListener('click', goPrevMonth);
+            document.getElementById('next-month').addEventListener('click', goNextMonth);
+            document.getElementById('prev-year').addEventListener('click', goPrevYear);
+            document.getElementById('next-year').addEventListener('click', goNextYear);
+            document.getElementById('today-btn').addEventListener('click', goToToday);
+        }
+
+        // 初始化
+        function init() {
+            bindEvents();
+            // 默认显示今天所在月份
+            renderCalendar();
+        }
+
+        // 启动
+        window.onload = init;
+    </script>
+</body>
+</html>
